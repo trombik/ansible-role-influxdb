@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-influxdb
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install-{{ ansible_os_family }}.yml"
+
+- name: Create log directory
+  file:
+    path: "{{ influxdb_log_dir }}"
+    mode: 0755
+    owner: "{{ influxdb_user }}"
+    group: "{{ influxdb_group }}"
+    state: directory
+  notify: Restart influxdb
+
+- name: Create db directory
+  file:
+    path: "{{ influxdb_db_dir }}"
+    mode: 0755
+    owner: "{{ influxdb_user }}"
+    group: "{{ influxdb_group }}"
+    state: directory
+  notify: Restart influxdb
+
+- name: Create influxdb.conf
+  template:
+    src: influxdb.conf.j2
+    dest: "{{ influxdb_conf_file }}"
+    validate: echo %s
+  notify: Restart influxdb
+
+- name: Start influxdb
+  service:
+    name: "{{ influxdb_service }}"
+    enabled: true
+    state: started

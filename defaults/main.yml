@@ -1,0 +1,8 @@
+influxdb_user: influxdb
+influxdb_group: influxdb
+influxdb_log_dir: /var/log/influxdb
+influxdb_db_dir: "{{ __influxdb_db_dir }}"
+influxdb_service: influxdb
+influxdb_conf_dir: "{{ __influxdb_conf_dir }}"
+influxdb_conf_file: "{{ __influxdb_conf_dir }}/influxdb.conf"
+influxdb_flags: ""
