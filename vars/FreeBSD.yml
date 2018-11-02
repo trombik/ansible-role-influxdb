@@ -1,2 +1,7 @@
+__influxdb_user: influxd
+__influxdb_group: influxd
+__influxdb_package: influxdb
 __influxdb_db_dir: /var/db/influxdb
-__influxdb_conf_dir: /usr/local/etc/influxdb
+__influxdb_conf_dir: /usr/local/etc
+__influxdb_conf_file_name: influxd.conf
+__influxdb_service: influxd
