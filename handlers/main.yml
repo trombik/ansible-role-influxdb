@@ -2,5 +2,15 @@
 
 - name: Restart influxdb
   service:
-    name: influxdb
+    name: "{{ influxdb_service }}"
     state: restarted
+  notify:
+    - Wait for influxdb in handler
+
+- name: Wait for influxdb in handler
+  wait_for:
+    host: "{{ influxdb_bind_address.split(':')[0] }}"
+    port: "{{ influxdb_bind_address.split(':')[1] }}"
+    delay: 5
+    sleep: 1
+    state: started

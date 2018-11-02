@@ -1,5 +1,32 @@
 - hosts: localhost
   roles:
+    - trombik.apt_repo
     - ansible-role-influxdb
   vars:
-    influxdb_config: ""
+    apt_repo_keys_to_add:
+      - https://repos.influxdata.com/influxdb.key
+    apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+    apt_repo_enable_apt_transport_https: yes
+    influxdb_bind_address: 127.0.0.1:8088
+    influxdb_config: |
+      reporting-disabled = true
+      bind-address = "{{ influxdb_bind_address }}"
+      [meta]
+        dir = "{{ influxdb_db_dir }}/meta"
+      [data]
+        dir = "{{ influxdb_db_dir }}/data"
+        wal-dir = "{{ influxdb_db_dir }}/wal"
+      [coordinator]
+      [retention]
+      [shard-precreation]
+      [monitor]
+      [http]
+      [ifql]
+      [logging]
+      [subscriber]
+      [[graphite]]
+      [[collectd]]
+      [[opentsdb]]
+      [[udp]]
+      [tls]
+

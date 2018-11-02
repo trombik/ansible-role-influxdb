@@ -1,8 +1,10 @@
-influxdb_user: influxdb
-influxdb_group: influxdb
-influxdb_log_dir: /var/log/influxdb
+influxdb_user: "{{ __influxdb_user }}"
+influxdb_group: "{{ __influxdb_group }}"
+influxdb_package: "{{ __influxdb_package }}"
 influxdb_db_dir: "{{ __influxdb_db_dir }}"
-influxdb_service: influxdb
+influxdb_service: "{{ __influxdb_service }}"
 influxdb_conf_dir: "{{ __influxdb_conf_dir }}"
-influxdb_conf_file: "{{ __influxdb_conf_dir }}/influxdb.conf"
+influxdb_conf_file_name: "{{ __influxdb_conf_file_name }}"
+influxdb_conf_file: "{{ influxdb_conf_dir }}/{{ influxdb_conf_file_name }}"
 influxdb_flags: ""
+influxdb_bind_address: "localhost:8088"

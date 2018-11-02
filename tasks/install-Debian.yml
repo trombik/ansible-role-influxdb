@@ -1,7 +1,7 @@
 ---
 
 - name: Install influxdb
-  pkgng:
+  apt:
     name: "{{ influxdb_package }}"
     state: present
 
@@ -9,9 +9,3 @@
   service:
     name: "{{ influxdb_service }}"
     enabled: yes
-
-- name: Create /etc/rc.conf.d/influxd
-  template:
-    dest: "/etc/rc.conf.d/{{ influxdb_service }}"
-    src: FreeBSD.subr.j2
-    validate: sh -n %s

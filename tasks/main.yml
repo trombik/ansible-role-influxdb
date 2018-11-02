@@ -5,16 +5,7 @@
 
 - include: "install-{{ ansible_os_family }}.yml"
 
-- name: Create log directory
-  file:
-    path: "{{ influxdb_log_dir }}"
-    mode: 0755
-    owner: "{{ influxdb_user }}"
-    group: "{{ influxdb_group }}"
-    state: directory
-  notify: Restart influxdb
-
-- name: Create db directory
+- name: Create influxdb_db_dir directory
   file:
     path: "{{ influxdb_db_dir }}"
     mode: 0755
@@ -25,7 +16,7 @@
 
 - name: Create influxdb.conf
   template:
-    src: influxdb.conf.j2
+    src: influxd.conf.j2
     dest: "{{ influxdb_conf_file }}"
     validate: echo %s
   notify: Restart influxdb
@@ -33,5 +24,12 @@
 - name: Start influxdb
   service:
     name: "{{ influxdb_service }}"
-    enabled: true
+    state: started
+
+- name: Wait for influxdb in task
+  wait_for:
+    host: "{{ influxdb_bind_address.split(':')[0] }}"
+    port: "{{ influxdb_bind_address.split(':')[1] }}"
+    delay: 5
+    sleep: 1
     state: started
