@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: influxdb
   author: Tomoyuki Sakurai
   description: Install and configure influxdb
   company: N/A
