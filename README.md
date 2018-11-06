@@ -20,6 +20,20 @@ None
 | `influxdb_conf_file` | Path to the configuration file | `{{ influxdb_conf_dir }}/{{ influxdb_conf_file_name }}` |
 | `influxdb_flags` | Flags to pass to `influxd` daemon | `""` |
 | `influxdb_bind_address` | Address and port number the daemon listens on | `localhost:8088` |
+| `influxdb_databases` | List of databases to create or remove (see below) | `[]` |
+
+## `influxdb_databases`
+
+This is a list of dict of databases to create or remove. The keys of the dict
+are any keys supported by `influxdb_database` `ansible` module. An example:
+
+```yaml
+influxdb_databases:
+  - database_name: mydatabase
+    state: present
+```
+
+`database_name` and `state` are mandatory. Others are optional.
 
 ## Debian
 
@@ -74,6 +88,9 @@ None
     apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
     apt_repo_enable_apt_transport_https: yes
     influxdb_bind_address: 127.0.0.1:8088
+    influxdb_databases:
+      - database_name: mydatabase
+        state: present
     influxdb_config: |
       reporting-disabled = true
       bind-address = "{{ influxdb_bind_address }}"

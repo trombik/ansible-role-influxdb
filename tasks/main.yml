@@ -12,6 +12,7 @@
     owner: "{{ influxdb_user }}"
     group: "{{ influxdb_group }}"
     state: directory
+  register: __register_create_influxdb_db_dir
   notify: Restart influxdb
 
 - name: Create influxdb.conf
@@ -19,17 +20,59 @@
     src: influxd.conf.j2
     dest: "{{ influxdb_conf_file }}"
     validate: echo %s
+  register: __register_create_influxdb_conf
   notify: Restart influxdb
 
 - name: Start influxdb
   service:
     name: "{{ influxdb_service }}"
     state: started
+  register: __register_start_influxdb
 
-- name: Wait for influxdb in task
+- name: Wait for influxdb after `Start influxdb`
   wait_for:
     host: "{{ influxdb_bind_address.split(':')[0] }}"
     port: "{{ influxdb_bind_address.split(':')[1] }}"
     delay: 5
     sleep: 1
     state: started
+  when:
+    - __register_start_influxdb.changed
+
+- name: Restart influxdb before creating databases
+  # XXX ensure influxd has been restarted before creating databases
+  # this task may be removed when flush_handlers gets new `filter`
+  # https://github.com/ansible/ansible/pull/25573
+  service:
+    name: "{{ influxdb_service }}"
+    state: restarted
+  register: __register_restart_influxdb
+  when:
+    - (__register_create_influxdb_db_dir.changed or __register_create_influxdb_conf.changed) or (ansible_os_family == 'FreeBSD' and __create_etc_rc_conf_d_influxd.changed)
+
+- name: Wait for influxdb after restart
+  wait_for:
+    host: "{{ influxdb_bind_address.split(':')[0] }}"
+    port: "{{ influxdb_bind_address.split(':')[1] }}"
+    delay: 5
+    sleep: 1
+    state: started
+  when:
+    - __register_restart_influxdb.changed
+
+- name: Create or delete databases
+  influxdb_database:
+    database_name: "{{ item.database_name }}"
+    hostname: "{{ item.hostname | default(omit) }}"
+    password: "{{ item.password | default(omit) }}"
+    port: "{{ item.port | default(omit) }}"
+    proxies: "{{ item.proxies | default(omit) }}"
+    retries: "{{ item.retries | default(omit) }}"
+    ssl: "{{ item.ssl | default(omit) }}"
+    state: "{{ item.state }}"
+    timeout: "{{ item.timeout | default(omit) }}"
+    udp_port: "{{ item.udp_port | default(omit) }}"
+    use_udp: "{{ item.use_udp | default(omit) }}"
+    username: "{{ item.username | default(omit) }}"
+    validate_certs: "{{ item.validate_certs | default(omit) }}"
+  with_items: "{{ influxdb_databases }}"

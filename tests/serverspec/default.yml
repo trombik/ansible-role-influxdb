@@ -8,6 +8,9 @@
     apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
     apt_repo_enable_apt_transport_https: yes
     influxdb_bind_address: 127.0.0.1:8088
+    influxdb_databases:
+      - database_name: mydatabase
+        state: present
     influxdb_config: |
       reporting-disabled = true
       bind-address = "{{ influxdb_bind_address }}"
@@ -29,4 +32,3 @@
       [[opentsdb]]
       [[udp]]
       [tls]
-
