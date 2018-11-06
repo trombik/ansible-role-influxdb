@@ -8,3 +8,4 @@ influxdb_conf_file_name: "{{ __influxdb_conf_file_name }}"
 influxdb_conf_file: "{{ influxdb_conf_dir }}/{{ influxdb_conf_file_name }}"
 influxdb_flags: ""
 influxdb_bind_address: "localhost:8088"
+influxdb_databases: []
