@@ -29,6 +29,13 @@ when "openbsd"
   db_dir = "/var/influxdb"
 end
 config = "#{config_dir}/#{config_name}"
+db_users = [
+  { name: "foo", read: :success, write: :success, password: "PassWord" },
+  { name: "write", read: :fail, write: :success, password: "write" },
+  { name: "read", read: :success, write: :fail, password: "read" },
+  { name: "none", read: :fail, write: :fail, password: "none" }
+]
+test_database = "mydatabase"
 
 describe package(package) do
   it { should be_installed }
@@ -91,13 +98,47 @@ end
 describe command "influx -username #{admin_user} -password #{admin_password} -execute 'show databases'" do
   its(:exit_status) { should eq 0 }
   its(:stderr) { should eq "" }
-  its(:stdout) { should match(/^mydatabase$/) }
+  its(:stdout) { should match(/^#{test_database}$/) }
 end
 
 describe command "influx -username #{admin_user} -password #{admin_password} -execute 'show users'" do
   its(:exit_status) { should eq 0 }
   its(:stderr) { should eq "" }
-  its(:stdout) { should match(/^foo\s+false$/) }
+  db_users.map { |u| u[:name] }.each do |name|
+    its(:stdout) { should match(/^#{name}\s+false$/) }
+  end
   its(:stdout) { should_not match(/^bar\s+/) }
   its(:stdout) { should match(/^admin\s+true$/) }
+end
+
+db_users.each do |u|
+  describe command "influx -username #{u[:name]} -password #{u[:password]} -database #{test_database} -execute 'INSERT cpu,host=serverA,region=us_west value=0.64'" do
+    its(:exit_status) { should eq 0 }
+    its(:stderr) { should eq "" }
+    case u[:write]
+    when :success
+      its(:stdout) { should eq "" }
+    when :fail
+      its(:stdout) { should match(/user is not authorized to write to database/) }
+    else
+      raise "unknown assert keyword `#{u[:write]}`"
+    end
+  end
+end
+
+db_users.each do |u|
+  describe command "influx -username #{u[:name]} -password #{u[:password]} -database #{test_database} -execute 'SELECT host, region, value FROM cpu'" do
+    case u[:read]
+    when :success
+      its(:exit_status) { should eq 0 }
+      its(:stderr) { should eq "" }
+      its(:stdout) { should match(/^\d+\s+serverA\s+us_west\s+0\.64$/) }
+    when :fail
+      its(:exit_status) { should eq 1 }
+      its(:stderr) { should match(/not authorized to execute statement/) }
+      its(:stdout) { should match(/not authorized to execute statement/) }
+    else
+      raise "unknown assert keyword `#{u[:read]}`"
+    end
+  end
 end

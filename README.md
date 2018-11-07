@@ -2,6 +2,14 @@
 
 Install and configure `influxdb`. SSL/TLS has not been supported.
 
+## Notes
+
+This role includes `influxdb_user_with_grants` `ansible` module, which is a
+patched version of `influxdb_user`, found in `ansible` [PR 46216](https://github.com/ansible/ansible/pull/46216).
+This module has an additional keyword `grants`. Until the PR is merged to
+release version, and subsequently to available `ansible` packages, the module
+will be used.
+
 # Requirements
 
 None
@@ -47,10 +55,27 @@ any keys supported by
 [`influxdb_user`](https://docs.ansible.com/ansible/latest/modules/influxdb_user_module.html)
 `ansible` module.
 
+Also, `influxdb_user_with_grants` supports `grants` keyword.
+
 ```yaml
 influxdb_users:
   - user_name: foo
     user_password: PassWord
+    grants:
+      - database: mydatabase
+        privilege: ALL
+  - user_name: write
+    user_password: write
+    grants:
+      - database: mydatabase
+        privilege: WRITE
+  - user_name: read
+    user_password: read
+    grants:
+      - database: mydatabase
+        privilege: READ
+  - user_name: none
+    user_password: none
   - user_name: bar
     state: absent
 ```
@@ -128,6 +153,21 @@ None
     influxdb_users:
       - user_name: foo
         user_password: PassWord
+        grants:
+          - database: mydatabase
+            privilege: ALL
+      - user_name: write
+        user_password: write
+        grants:
+          - database: mydatabase
+            privilege: WRITE
+      - user_name: read
+        user_password: read
+        grants:
+          - database: mydatabase
+            privilege: READ
+      - user_name: none
+        user_password: none
       - user_name: bar
         state: absent
     influxdb_config: |
