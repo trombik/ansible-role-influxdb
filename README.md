@@ -21,11 +21,16 @@ None
 | `influxdb_flags` | Flags to pass to `influxd` daemon | `""` |
 | `influxdb_bind_address` | Address and port number the daemon listens on | `localhost:8088` |
 | `influxdb_databases` | List of databases to create or remove (see below) | `[]` |
+| `influxdb_users` | List of users to create or remove (see below) | `[]` |
+| `influxdb_admin_username` | User name of admin user, which is used to manage databases, and users. This user is created at initial installation | `""` |
+| `influxdb_admin_password` | Password of admin user | `""` |
 
 ## `influxdb_databases`
 
 This is a list of dict of databases to create or remove. The keys of the dict
-are any keys supported by `influxdb_database` `ansible` module. An example:
+are any keys supported by
+[`influxdb_database`](https://docs.ansible.com/ansible/latest/modules/influxdb_database_module.html)
+`ansible` module. An example:
 
 ```yaml
 influxdb_databases:
@@ -34,6 +39,32 @@ influxdb_databases:
 ```
 
 `database_name` and `state` are mandatory. Others are optional.
+
+## `influxdb_users`
+
+This is a list of dict of users to create or remove. The keys of the dict are
+any keys supported by
+[`influxdb_user`](https://docs.ansible.com/ansible/latest/modules/influxdb_user_module.html)
+`ansible` module.
+
+```yaml
+influxdb_users:
+  - user_name: foo
+    user_password: PassWord
+  - user_name: bar
+    state: absent
+```
+
+If a key is missing, the key will be omitted by `default(omit)` except the
+following keys.
+
+| Key | Default value |
+|-----|---------------|
+| `state` | `present` |
+| `login_username` | `influxdb_admin_username` |
+| `login_password` | `influxdb_admin_password` |
+| `hostname` | `influxdb_bind_address.split(':')[0]` |
+| `port` | `influxdb_bind_address.split(':')[1]` |
 
 ## Debian
 

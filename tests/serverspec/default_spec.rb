@@ -11,6 +11,8 @@ ports   = [8088, 8086]
 db_dir  = "/var/lib/influxdb"
 default_user = "root"
 default_group = "root"
+admin_user = "admin"
+admin_password = "PassWord"
 
 case os[:family]
 when "freebsd"
@@ -86,8 +88,16 @@ ports.each do |p|
   end
 end
 
-describe command "influx -execute 'show databases'" do
+describe command "influx -username #{admin_user} -password #{admin_password} -execute 'show databases'" do
   its(:exit_status) { should eq 0 }
   its(:stderr) { should eq "" }
   its(:stdout) { should match(/^mydatabase$/) }
+end
+
+describe command "influx -username #{admin_user} -password #{admin_password} -execute 'show users'" do
+  its(:exit_status) { should eq 0 }
+  its(:stderr) { should eq "" }
+  its(:stdout) { should match(/^foo\s+false$/) }
+  its(:stdout) { should_not match(/^bar\s+/) }
+  its(:stdout) { should match(/^admin\s+true$/) }
 end
