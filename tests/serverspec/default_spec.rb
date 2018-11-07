@@ -40,6 +40,17 @@ influx_command = "influx -ssl -unsafeSsl"
 tls_key = "#{config_dir}/tls/influxdb.key"
 tls_pub = "#{config_dir}/tls/influxdb.pem"
 
+case os[:family]
+when "ubuntu"
+  describe package "python-pip" do
+    if os[:release].to_f < 18.04
+      it { should be_installed }
+    else
+      it { should_not be_installed }
+    end
+  end
+end
+
 describe package(package) do
   it { should be_installed }
 end
