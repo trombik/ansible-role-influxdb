@@ -4,6 +4,11 @@
   apt:
     name: "{{ item }}"
     state: present
+  # XXX use `retries` as the package server fails sometimes
+  retries: 3
+  delay: 5
+  register: __register_influxdb_apt_python_packages
+  until: __register_influxdb_apt_python_packages is succeeded
   with_items:
     - python-requests
     # XXX pip is required for latest python-influxdb
@@ -23,6 +28,10 @@
   apt:
     name: "{{ influxdb_package }}"
     state: present
+  retries: 3
+  delay: 5
+  register: __register_influxdb_apt_influxdb
+  until: __register_influxdb_apt_influxdb is succeeded
 
 - name: Enable influxdb_service
   service:

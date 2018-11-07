@@ -60,12 +60,32 @@
   when:
     - __register_restart_influxdb.changed
 
+- name: See if admin user has been created
+  # https://docs.influxdata.com/influxdb/v1.7/administration/authentication_and_authorization/
+  # says:
+  #
+  # Note: If you enable authentication and have no users, InfluxDB will not
+  # enforce authentication and will only accept the query that creates a new
+  # admin user.
+  #
+  # and the error messages differ when no admin user exists, and when
+  # authentication failed.
+  command: "influx -execute 'SHOW USERS'"
+  register: __register_influxdb_show_users
+  failed_when: false
+  changed_when: false
+
+- name: Create influxdb_admin_username
+  command: "influx -execute \"CREATE USER {{ influxdb_admin_username }} WITH PASSWORD '{{ influxdb_admin_password }}' WITH ALL PRIVILEGES\""
+  when:
+    - "'ERR: error authorizing query: create admin user first or disable authentication' in __register_influxdb_show_users.stdout_lines"
+
 - name: Create or delete databases
   influxdb_database:
     database_name: "{{ item.database_name }}"
-    hostname: "{{ item.hostname | default(omit) }}"
-    password: "{{ item.password | default(omit) }}"
-    port: "{{ item.port | default(omit) }}"
+    hostname: "{{ item.hostname | default(influxdb_bind_address.split(':')[0]) }}"
+    login_password: "{{ item.password | default(influxdb_admin_password) }}"
+    port: "{{ item.port | default(influxdb_bind_address.split(':')[1]) }}"
     proxies: "{{ item.proxies | default(omit) }}"
     retries: "{{ item.retries | default(omit) }}"
     ssl: "{{ item.ssl | default(omit) }}"
@@ -73,6 +93,25 @@
     timeout: "{{ item.timeout | default(omit) }}"
     udp_port: "{{ item.udp_port | default(omit) }}"
     use_udp: "{{ item.use_udp | default(omit) }}"
-    username: "{{ item.username | default(omit) }}"
+    login_username: "{{ item.username | default(influxdb_admin_username) }}"
     validate_certs: "{{ item.validate_certs | default(omit) }}"
   with_items: "{{ influxdb_databases }}"
+
+- name: Create or delete users
+  influxdb_user:
+    admin: "{{ item.admin | default(omit) }}"
+    state: "{{ item.state | default('present')}}"
+    user_name: "{{ item.user_name }}"
+    user_password: "{{ item.user_password | default(omit) }}"
+    login_username: "{{ item.login_username | default(influxdb_admin_username) }}"
+    login_password: "{{ item.password | default(influxdb_admin_password) }}"
+    hostname: "{{ item.hostname | default(influxdb_bind_address.split(':')[0]) }}"
+    port: "{{ item.port | default(influxdb_bind_address.split(':')[1]) }}"
+    proxies: "{{ item.proxies | default(omit) }}"
+    retries: "{{ item.retries | default(omit) }}"
+    ssl: "{{ item.ssl | default(omit) }}"
+    timeout: "{{ item.timeout | default(omit) }}"
+    udp_port: "{{ item.udp_port | default(omit) }}"
+    use_udp: "{{ item.use_udp | default(omit) }}"
+    validate_certs: "{{ item.validate_certs | default(omit) }}"
+  with_items: "{{ influxdb_users }}"

@@ -9,3 +9,6 @@ influxdb_conf_file: "{{ influxdb_conf_dir }}/{{ influxdb_conf_file_name }}"
 influxdb_flags: ""
 influxdb_bind_address: "localhost:8088"
 influxdb_databases: []
+influxdb_users: []
+influxdb_admin_username: ""
+influxdb_admin_password: ""
