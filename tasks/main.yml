@@ -98,7 +98,7 @@
   with_items: "{{ influxdb_databases }}"
 
 - name: Create or delete users
-  influxdb_user:
+  influxdb_user_with_grants:
     admin: "{{ item.admin | default(omit) }}"
     state: "{{ item.state | default('present')}}"
     user_name: "{{ item.user_name }}"
@@ -114,4 +114,5 @@
     udp_port: "{{ item.udp_port | default(omit) }}"
     use_udp: "{{ item.use_udp | default(omit) }}"
     validate_certs: "{{ item.validate_certs | default(omit) }}"
+    grants: "{{ item.grants | default(omit) }}"
   with_items: "{{ influxdb_users }}"

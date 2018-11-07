@@ -17,6 +17,21 @@
     influxdb_users:
       - user_name: foo
         user_password: PassWord
+        grants:
+          - database: mydatabase
+            privilege: ALL
+      - user_name: write
+        user_password: write
+        grants:
+          - database: mydatabase
+            privilege: WRITE
+      - user_name: read
+        user_password: read
+        grants:
+          - database: mydatabase
+            privilege: READ
+      - user_name: none
+        user_password: none
       - user_name: bar
         state: absent
     influxdb_config: |

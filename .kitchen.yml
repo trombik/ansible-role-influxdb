@@ -19,6 +19,7 @@ provisioner:
   additional_copy_path:
     - extra_modules
     - filter_plugins
+    - library
 
 platforms:
   - name: freebsd-11.2-amd64
