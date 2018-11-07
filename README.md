@@ -118,13 +118,22 @@ None
       - https://repos.influxdata.com/influxdb.key
     apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
     apt_repo_enable_apt_transport_https: yes
-    influxdb_bind_address: 127.0.0.1:8088
+
+    influxdb_admin_username: admin
+    influxdb_admin_password: PassWord
+    influxdb_bind_address: 127.0.0.1:8086
     influxdb_databases:
       - database_name: mydatabase
         state: present
+    influxdb_users:
+      - user_name: foo
+        user_password: PassWord
+      - user_name: bar
+        state: absent
     influxdb_config: |
       reporting-disabled = true
-      bind-address = "{{ influxdb_bind_address }}"
+      # this one is bind address for backup process
+      bind-address = "127.0.0.1:8088"
       [meta]
         dir = "{{ influxdb_db_dir }}/meta"
       [data]
@@ -135,6 +144,8 @@ None
       [shard-precreation]
       [monitor]
       [http]
+        auth-enabled = true
+        bind-address = "{{ influxdb_bind_address }}"
       [ifql]
       [logging]
       [subscriber]
