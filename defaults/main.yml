@@ -12,3 +12,6 @@ influxdb_databases: []
 influxdb_users: []
 influxdb_admin_username: ""
 influxdb_admin_password: ""
+influxdb_include_x509_certificate: no
+influxdb_tls: no
+influxdb_tls_validate_certs: yes

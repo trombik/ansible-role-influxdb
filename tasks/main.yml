@@ -5,6 +5,12 @@
 
 - include: "install-{{ ansible_os_family }}.yml"
 
+- name: Include trombik.x509_certificate
+  include_role:
+    name: trombik.x509_certificate
+  when:
+    - influxdb_include_x509_certificate
+
 - name: Create influxdb_db_dir directory
   file:
     path: "{{ influxdb_db_dir }}"
@@ -70,13 +76,13 @@
   #
   # and the error messages differ when no admin user exists, and when
   # authentication failed.
-  command: "influx -execute 'SHOW USERS'"
+  command: "influx -host {{ influxdb_bind_address.split(':')[0] }} -port {{ influxdb_bind_address.split(':')[1] }} {% if influxdb_tls %}-ssl{% endif %} {% if not influxdb_tls_validate_certs %}-unsafeSsl{% endif %} -execute 'SHOW USERS'"
   register: __register_influxdb_show_users
   failed_when: false
   changed_when: false
 
 - name: Create influxdb_admin_username
-  command: "influx -execute \"CREATE USER {{ influxdb_admin_username }} WITH PASSWORD '{{ influxdb_admin_password }}' WITH ALL PRIVILEGES\""
+  command: "influx -host {{ influxdb_bind_address.split(':')[0] }} -port {{ influxdb_bind_address.split(':')[1] }} {% if influxdb_tls %}-ssl{% endif %} {% if not influxdb_tls_validate_certs %}-unsafeSsl{% endif %} -execute \"CREATE USER {{ influxdb_admin_username }} WITH PASSWORD '{{ influxdb_admin_password }}' WITH ALL PRIVILEGES\""
   when:
     - "'ERR: error authorizing query: create admin user first or disable authentication' in __register_influxdb_show_users.stdout_lines"
 
@@ -88,13 +94,13 @@
     port: "{{ item.port | default(influxdb_bind_address.split(':')[1]) }}"
     proxies: "{{ item.proxies | default(omit) }}"
     retries: "{{ item.retries | default(omit) }}"
-    ssl: "{{ item.ssl | default(omit) }}"
+    ssl: "{{ item.ssl | default(influxdb_tls) }}"
     state: "{{ item.state }}"
     timeout: "{{ item.timeout | default(omit) }}"
     udp_port: "{{ item.udp_port | default(omit) }}"
     use_udp: "{{ item.use_udp | default(omit) }}"
     login_username: "{{ item.username | default(influxdb_admin_username) }}"
-    validate_certs: "{{ item.validate_certs | default(omit) }}"
+    validate_certs: "{{ item.validate_certs | default(influxdb_tls_validate_certs) }}"
   with_items: "{{ influxdb_databases }}"
 
 - name: Create or delete users
@@ -109,10 +115,10 @@
     port: "{{ item.port | default(influxdb_bind_address.split(':')[1]) }}"
     proxies: "{{ item.proxies | default(omit) }}"
     retries: "{{ item.retries | default(omit) }}"
-    ssl: "{{ item.ssl | default(omit) }}"
+    ssl: "{{ item.ssl | default(influxdb_tls) }}"
     timeout: "{{ item.timeout | default(omit) }}"
     udp_port: "{{ item.udp_port | default(omit) }}"
     use_udp: "{{ item.use_udp | default(omit) }}"
-    validate_certs: "{{ item.validate_certs | default(omit) }}"
+    validate_certs: "{{ item.validate_certs | default(influxdb_tls_validate_certs) }}"
     grants: "{{ item.grants | default(omit) }}"
   with_items: "{{ influxdb_users }}"

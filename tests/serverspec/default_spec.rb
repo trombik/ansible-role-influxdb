@@ -36,6 +36,9 @@ db_users = [
   { name: "none", read: :fail, write: :fail, password: "none" }
 ]
 test_database = "mydatabase"
+influx_command = "influx -ssl -unsafeSsl"
+tls_key = "#{config_dir}/tls/influxdb.key"
+tls_pub = "#{config_dir}/tls/influxdb.pem"
 
 describe package(package) do
   it { should be_installed }
@@ -49,6 +52,24 @@ describe file(config) do
   it { should be_grouped_into os[:family] == "openbsd" ? group : default_group }
   its(:content) { should match(/^# Managed by ansible$/) }
   its(:content) { should match(/^reporting-disabled = true$/) }
+end
+
+describe file tls_pub do
+  it { should exist }
+  it { should be_file }
+  it { should be_mode 640 }
+  it { should be_owned_by default_user }
+  it { should be_grouped_into group }
+  its(:content) { should match(/^-----BEGIN CERTIFICATE-----$/) }
+end
+
+describe file tls_key do
+  it { should exist }
+  it { should be_file }
+  it { should be_mode 640 }
+  it { should be_owned_by default_user }
+  it { should be_grouped_into group }
+  its(:content) { should match(/^-----BEGIN PRIVATE KEY-----$/) }
 end
 
 describe file(db_dir) do
@@ -95,13 +116,13 @@ ports.each do |p|
   end
 end
 
-describe command "influx -username #{admin_user} -password #{admin_password} -execute 'show databases'" do
+describe command "#{influx_command} -username #{admin_user} -password #{admin_password} -execute 'show databases'" do
   its(:exit_status) { should eq 0 }
   its(:stderr) { should eq "" }
   its(:stdout) { should match(/^#{test_database}$/) }
 end
 
-describe command "influx -username #{admin_user} -password #{admin_password} -execute 'show users'" do
+describe command "#{influx_command} -username #{admin_user} -password #{admin_password} -execute 'show users'" do
   its(:exit_status) { should eq 0 }
   its(:stderr) { should eq "" }
   db_users.map { |u| u[:name] }.each do |name|
@@ -112,7 +133,7 @@ describe command "influx -username #{admin_user} -password #{admin_password} -ex
 end
 
 db_users.each do |u|
-  describe command "influx -username #{u[:name]} -password #{u[:password]} -database #{test_database} -execute 'INSERT cpu,host=serverA,region=us_west value=0.64'" do
+  describe command "#{influx_command} -username #{u[:name]} -password #{u[:password]} -database #{test_database} -execute 'INSERT cpu,host=serverA,region=us_west value=0.64'" do
     its(:exit_status) { should eq 0 }
     its(:stderr) { should eq "" }
     case u[:write]
@@ -127,7 +148,7 @@ db_users.each do |u|
 end
 
 db_users.each do |u|
-  describe command "influx -username #{u[:name]} -password #{u[:password]} -database #{test_database} -execute 'SELECT host, region, value FROM cpu'" do
+  describe command "#{influx_command} -username #{u[:name]} -password #{u[:password]} -database #{test_database} -execute 'SELECT host, region, value FROM cpu'" do
     case u[:read]
     when :success
       its(:exit_status) { should eq 0 }
