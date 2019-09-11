@@ -4,6 +4,7 @@
     - trombik.apt_repo
     - ansible-role-influxdb
   vars:
+    x509_certificate_debug_log: yes
     tls_cert_path: "{{ influxdb_conf_dir }}/tls/influxdb.pem"
     tls_key_path: "{{ influxdb_conf_dir }}/tls/influxdb.key"
     x509_certificate:

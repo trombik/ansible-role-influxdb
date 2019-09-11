@@ -1,66 +1,12 @@
 ---
-
-- name: Run block for older Ubuntu releases
-  when:
-    - "ansible_distribution == 'Ubuntu'"
-    - "ansible_distribution_version is version('18.04', '<')"
-  block:
-    - name: Install python packages for database management by ansible
-      apt:
-        name: "{{ item }}"
-        state: present
-      # XXX use `retries` as the package server fails sometimes
-      retries: 3
-      delay: 5
-      register: __register_influxdb_apt_python_packages
-      until: __register_influxdb_apt_python_packages is succeeded
-      with_items:
-        - python-requests
-        # XXX pip is required for latest python-influxdb
-        - "python{% if ansible_python['version']['major'] > '2' %}{{ ansible_python['version']['major'] }}{% endif %}-pip"
-
-    - name: Install python-influxdb
-      # XXX install python-influxdb because the one in the official package system
-      # is too old. version 4.1.0, which supports `retries`, or later, is required.
-      pip:
-        name: influxdb
-        # XXX workaround `its parent directory is not owned by the current user`
-        # error when using pip with sudo.
-        extra_args: --no-cache-dir
-        state: present
-
-- name: Run block for other Ubuntu releases
-  when:
-    - "ansible_distribution == 'Ubuntu'"
-    - "ansible_distribution_version is version('18.04', '>=')"
-  block:
-    - name: Install python packages for database management by ansible
-      apt:
-        name: "{{ item }}"
-        state: present
-      retries: 3
-      delay: 5
-      register: __register_influxdb_apt_python_packages
-      until: __register_influxdb_apt_python_packages is succeeded
-      with_items:
-        - python-requests
-        - python-influxdb
-
-- name: Run block for Debian
-  when:
-    - "ansible_distribution == 'Debian'"
-  block:
-    - name: Install python packages for database management by ansible
-      apt:
-        name: "{{ item }}"
-        state: present
-      retries: 3
-      delay: 5
-      register: __register_influxdb_apt_python_packages
-      until: __register_influxdb_apt_python_packages is succeeded
-      with_items:
-        - python-requests
-        - python-influxdb
+- name: Install python packages for database management by ansible
+  apt:
+    name: "{{ influxdb_management_packages }}"
+    state: present
+  retries: 3
+  delay: 5
+  register: __register_influxdb_apt_python_packages
+  until: __register_influxdb_apt_python_packages is succeeded
 
 - name: Install influxdb
   apt:
