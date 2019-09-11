@@ -6,3 +6,6 @@ __influxdb_db_dir: /var/influxdb
 __influxdb_conf_dir: /etc/influxdb
 __influxdb_conf_file_name: influxdb.conf
 __influxdb_service: influxdb
+__influxdb_management_packages:
+  - py3-influxdb
+  - py3-requests

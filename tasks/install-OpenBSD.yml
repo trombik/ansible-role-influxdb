@@ -2,11 +2,8 @@
 
 - name: Install python packages for database management by ansible
   openbsd_pkg:
-    name: "{{ item }}"
+    name: "{{ influxdb_management_packages }}"
     state: present
-  with_items:
-    - py-influxdb
-    - py-requests
 
 - name: Install influxdb
   openbsd_pkg:

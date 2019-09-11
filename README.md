@@ -1,4 +1,4 @@
-# ansible-role-influxdb
+# `trombik.influxdb`
 
 Install and configure `influxdb`. Supports SSL/TLS.
 
@@ -35,6 +35,7 @@ None
 | `influxdb_include_x509_certificate` | If `true`, include [`trombik.x509_certificate`](https://github.com/trombik/ansible-role-x509_certificate) role during the play | `no` |
 | `influxdb_tls` | If `true`, use TLS transport | `no` |
 | `influxdb_tls_validate_certs` | If `true`, validate server's certificate during TLS handshake | `yes` |
+| `influxdb_management_packages` | List of packages to install for database management by `ansible` | `{{ __influxdb_management_packages }}` |
 
 ## `influxdb_databases`
 
@@ -115,6 +116,7 @@ line must be in `requirements.yml`.
 | `__influxdb_conf_dir` | `/etc/influxdb` |
 | `__influxdb_conf_file_name` | `influxdb.conf` |
 | `__influxdb_service` | `influxdb` |
+| `__influxdb_management_packages` | `["python-influxdb", "python-requests"]` |
 
 ## FreeBSD
 
@@ -127,6 +129,7 @@ line must be in `requirements.yml`.
 | `__influxdb_conf_dir` | `/usr/local/etc` |
 | `__influxdb_conf_file_name` | `influxd.conf` |
 | `__influxdb_service` | `influxd` |
+| `__influxdb_management_packages` | `["databases/py-influxdb", "www/py-requests"]` |
 
 ## OpenBSD
 
@@ -139,19 +142,22 @@ line must be in `requirements.yml`.
 | `__influxdb_conf_dir` | `/etc/influxdb` |
 | `__influxdb_conf_file_name` | `influxdb.conf` |
 | `__influxdb_service` | `influxdb` |
+| `__influxdb_management_packages` | `["py3-influxdb", "py3-requests"]` |
 
 # Dependencies
 
-None
+* `trombik.x509_certificate` if `influxdb_include_x509_certificate` is true
 
 # Example Playbook
 
 ```yaml
+---
 - hosts: localhost
   roles:
     - trombik.apt_repo
     - ansible-role-influxdb
   vars:
+    x509_certificate_debug_log: yes
     tls_cert_path: "{{ influxdb_conf_dir }}/tls/influxdb.pem"
     tls_key_path: "{{ influxdb_conf_dir }}/tls/influxdb.key"
     x509_certificate:
