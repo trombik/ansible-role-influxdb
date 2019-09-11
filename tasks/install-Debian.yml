@@ -1,6 +1,6 @@
 ---
 
-- name: Block for older Ubuntu releases
+- name: Run block for older Ubuntu releases
   when:
     - "ansible_distribution == 'Ubuntu'"
     - "ansible_distribution_version is version('18.04', '<')"

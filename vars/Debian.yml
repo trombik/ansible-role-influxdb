@@ -1,3 +1,4 @@
+---
 __influxdb_user: influxdb
 __influxdb_group: influxdb
 __influxdb_package: influxdb
