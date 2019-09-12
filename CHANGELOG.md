@@ -1,3 +1,9 @@
+## Release 1.1.1
+
+* 36f3e9b bugfix: remove ansible warnings, drop Ubuntu 16.04 support
+* ff56371 bugfix: s/python/python3/
+* 7bb97ca QA
+
 ## Release 1.1.0
 
 * 96f079d bugfix: install python-influxdb from pip only when the platform is older Ubuntu
