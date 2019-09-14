@@ -13,6 +13,7 @@ default_user = "root"
 default_group = "root"
 admin_user = "admin"
 admin_password = "PassWord"
+log_dir = "/var/log/influxdb"
 
 case os[:family]
 when "freebsd"
@@ -31,8 +32,8 @@ end
 config = "#{config_dir}/#{config_name}"
 db_users = [
   { name: "foo", read: :success, write: :success, password: "PassWord" },
-  { name: "write", read: :fail, write: :success, password: "write" },
-  { name: "read", read: :success, write: :fail, password: "read" },
+  { name: "write_only", read: :fail, write: :success, password: "write_only" },
+  { name: "read_only", read: :success, write: :fail, password: "read_only" },
   { name: "none", read: :fail, write: :fail, password: "none" }
 ]
 test_database = "mydatabase"
@@ -86,6 +87,13 @@ end
 describe file(db_dir) do
   it { should exist }
   it { should be_mode 755 }
+  it { should be_owned_by user }
+  it { should be_grouped_into group }
+end
+
+describe file(log_dir) do
+  it { should exist }
+  it { should be_mode 750 }
   it { should be_owned_by user }
   it { should be_grouped_into group }
 end
@@ -173,4 +181,12 @@ db_users.each do |u|
       raise "unknown assert keyword `#{u[:read]}`"
     end
   end
+end
+
+describe file("#{log_dir}/access.log") do
+  it { should exist }
+  it { should be_file }
+  it { should be_owned_by user }
+  it { should be_grouped_into group }
+  its(:content) { should match(/^127\.0\.0\.1 - write_only/) }
 end

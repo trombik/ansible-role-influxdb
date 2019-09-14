@@ -90,13 +90,13 @@
         grants:
           - database: mydatabase
             privilege: ALL
-      - user_name: write
-        user_password: write
+      - user_name: write_only
+        user_password: write_only
         grants:
           - database: mydatabase
             privilege: WRITE
-      - user_name: read
-        user_password: read
+      - user_name: read_only
+        user_password: read_only
         grants:
           - database: mydatabase
             privilege: READ
@@ -123,6 +123,7 @@
         https-enabled = true
         https-certificate = "{{ tls_cert_path }}"
         https-private-key = "{{ tls_key_path }}"
+        access-log-path = "{{ influxdb_log_dir }}/access.log"
       [ifql]
       [logging]
       [subscriber]
