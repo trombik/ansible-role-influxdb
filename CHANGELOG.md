@@ -1,3 +1,7 @@
+## Release 1.1.2
+
+* 7a24e44 bugfix: introduce influxdb_log_dir
+
 ## Release 1.1.1
 
 * 36f3e9b bugfix: remove ansible warnings, drop Ubuntu 16.04 support
