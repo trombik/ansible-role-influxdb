@@ -22,6 +22,7 @@ None
 | `influxdb_group` | Group name of the service | `{{ __influxdb_group }}` |
 | `influxdb_package` | Package name `influxdb` | `{{ __influxdb_package }}` |
 | `influxdb_db_dir` | Path to database directory | `{{ __influxdb_db_dir }}` |
+| `influxdb_log_dir` | Path to log directory | `"{{ __influxdb_log_dir }}"` |
 | `influxdb_service` | Service name of `influxdb` | `{{ __influxdb_service }}` |
 | `influxdb_conf_dir` | Path to base directory of the configuration file | `{{ __influxdb_conf_dir }}` |
 | `influxdb_conf_file_name` | File name of the configuration file | `{{ __influxdb_conf_file_name }}` |
@@ -243,13 +244,13 @@ line must be in `requirements.yml`.
         grants:
           - database: mydatabase
             privilege: ALL
-      - user_name: write
-        user_password: write
+      - user_name: write_only
+        user_password: write_only
         grants:
           - database: mydatabase
             privilege: WRITE
-      - user_name: read
-        user_password: read
+      - user_name: read_only
+        user_password: read_only
         grants:
           - database: mydatabase
             privilege: READ
@@ -276,6 +277,7 @@ line must be in `requirements.yml`.
         https-enabled = true
         https-certificate = "{{ tls_cert_path }}"
         https-private-key = "{{ tls_key_path }}"
+        access-log-path = "{{ influxdb_log_dir }}/access.log"
       [ifql]
       [logging]
       [subscriber]

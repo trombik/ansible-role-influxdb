@@ -21,6 +21,15 @@
   register: __register_create_influxdb_db_dir
   notify: Restart influxdb
 
+- name: Create influxdb_log_dir directory
+  file:
+    path: "{{ influxdb_log_dir }}"
+    mode: 0750
+    owner: "{{ influxdb_user }}"
+    group: "{{ influxdb_group }}"
+    state: directory
+  notify: Restart influxdb
+
 - name: Create influxdb.conf
   template:
     src: influxd.conf.j2
