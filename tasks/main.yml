@@ -93,7 +93,7 @@
 - name: Create influxdb_admin_username
   command: "influx -host {{ influxdb_bind_address.split(':')[0] }} -port {{ influxdb_bind_address.split(':')[1] }} {% if influxdb_tls %}-ssl{% endif %} {% if not influxdb_tls_validate_certs %}-unsafeSsl{% endif %} -execute \"CREATE USER {{ influxdb_admin_username }} WITH PASSWORD '{{ influxdb_admin_password }}' WITH ALL PRIVILEGES\""
   when:
-    - "'ERR: error authorizing query: create admin user first or disable authentication' in __register_influxdb_show_users.stdout_lines"
+    - __register_influxdb_show_users.stdout is search('create admin user first or disable authentication')
 
 - name: Create or delete databases
   influxdb_database:
