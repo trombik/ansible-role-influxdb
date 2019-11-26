@@ -1,3 +1,10 @@
+## Release 1.2.0
+
+* 5dda33c bugfix: QA
+* 22869dd feature: support influxdb_extra_packages
+* 5e847db bugfix: add no_proxy
+* 9478714 bugfix: use `is search()`, which works in newer ansible
+
 ## Release 1.1.2
 
 * 7a24e44 bugfix: introduce influxdb_log_dir
