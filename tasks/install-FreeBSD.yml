@@ -10,6 +10,11 @@
     name: "{{ influxdb_package }}"
     state: present
 
+- name: Install influxdb_extra_packages
+  pkgng:
+    name: "{{ influxdb_extra_packages }}"
+    state: present
+
 - name: Enable influxdb_service
   service:
     name: "{{ influxdb_service }}"

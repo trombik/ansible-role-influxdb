@@ -2,6 +2,7 @@
 __influxdb_user: influxdb
 __influxdb_group: influxdb
 __influxdb_package: influxdb
+__influxdb_extra_packages: []
 __influxdb_db_dir: /var/lib/influxdb
 __influxdb_log_dir: /var/log/influxdb
 __influxdb_conf_dir: /etc/influxdb

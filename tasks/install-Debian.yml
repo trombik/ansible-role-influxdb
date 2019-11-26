@@ -8,6 +8,15 @@
   register: __register_influxdb_apt_python_packages
   until: __register_influxdb_apt_python_packages is succeeded
 
+- name: Install influxdb_extra_packages
+  apt:
+    name: "{{ influxdb_extra_packages }}"
+    state: present
+  retries: 3
+  delay: 5
+  register: __register_influxdb_apt_influxdb_extra_packages
+  until: __register_influxdb_apt_influxdb_extra_packages is succeeded
+
 - name: Install influxdb
   apt:
     name: "{{ influxdb_package }}"
