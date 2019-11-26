@@ -2,6 +2,7 @@ require "spec_helper"
 require "serverspec"
 
 package = "influxdb"
+extra_packages = []
 service = "influxdb"
 config_dir = "/etc/influxdb"
 config_name = "influxdb.conf"
@@ -29,6 +30,7 @@ when "openbsd"
   group = "_influx"
   db_dir = "/var/influxdb"
 end
+
 config = "#{config_dir}/#{config_name}"
 db_users = [
   { name: "foo", read: :success, write: :success, password: "PassWord" },
@@ -54,6 +56,12 @@ end
 
 describe package(package) do
   it { should be_installed }
+end
+
+extra_packages.each do |p|
+  describe package(p) do
+    it { should be_installed }
+  end
 end
 
 describe file(config) do

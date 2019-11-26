@@ -73,7 +73,6 @@
       - https://repos.influxdata.com/influxdb.key
     apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
     apt_repo_enable_apt_transport_https: yes
-
     influxdb_admin_username: admin
     influxdb_admin_password: PassWord
     influxdb_tls: yes

@@ -21,6 +21,7 @@ None
 | `influxdb_user` | User name of the service | `{{ __influxdb_user }}` |
 | `influxdb_group` | Group name of the service | `{{ __influxdb_group }}` |
 | `influxdb_package` | Package name `influxdb` | `{{ __influxdb_package }}` |
+| `influxdb_extra_packages` | A list of extra packages to install | `{{ __influxdb_extra_packages }}` |
 | `influxdb_db_dir` | Path to database directory | `{{ __influxdb_db_dir }}` |
 | `influxdb_log_dir` | Path to log directory | `"{{ __influxdb_log_dir }}"` |
 | `influxdb_service` | Service name of `influxdb` | `{{ __influxdb_service }}` |
@@ -113,7 +114,9 @@ line must be in `requirements.yml`.
 | `__influxdb_user` | `influxdb` |
 | `__influxdb_group` | `influxdb` |
 | `__influxdb_package` | `influxdb` |
+| `__influxdb_extra_packages` | `[]` |
 | `__influxdb_db_dir` | `/var/lib/influxdb` |
+| `__influxdb_log_dir` | `/var/log/influxdb` |
 | `__influxdb_conf_dir` | `/etc/influxdb` |
 | `__influxdb_conf_file_name` | `influxdb.conf` |
 | `__influxdb_service` | `influxdb` |
@@ -126,7 +129,9 @@ line must be in `requirements.yml`.
 | `__influxdb_user` | `influxd` |
 | `__influxdb_group` | `influxd` |
 | `__influxdb_package` | `influxdb` |
+| `__influxdb_extra_packages` | `[]` |
 | `__influxdb_db_dir` | `/var/db/influxdb` |
+| `__influxdb_log_dir` | `/var/log/influxdb` |
 | `__influxdb_conf_dir` | `/usr/local/etc` |
 | `__influxdb_conf_file_name` | `influxd.conf` |
 | `__influxdb_service` | `influxd` |
@@ -139,7 +144,9 @@ line must be in `requirements.yml`.
 | `__influxdb_user` | `_influx` |
 | `__influxdb_group` | `_influx` |
 | `__influxdb_package` | `influxdb` |
+| `__influxdb_extra_packages` | `[]` |
 | `__influxdb_db_dir` | `/var/influxdb` |
+| `__influxdb_log_dir` | `/var/log/influxdb` |
 | `__influxdb_conf_dir` | `/etc/influxdb` |
 | `__influxdb_conf_file_name` | `influxdb.conf` |
 | `__influxdb_service` | `influxdb` |
@@ -227,7 +234,6 @@ line must be in `requirements.yml`.
       - https://repos.influxdata.com/influxdb.key
     apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
     apt_repo_enable_apt_transport_https: yes
-
     influxdb_admin_username: admin
     influxdb_admin_password: PassWord
     influxdb_tls: yes
