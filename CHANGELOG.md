@@ -1,3 +1,8 @@
+## Release 1.2.1
+
+* 15de982 bugfix: QA
+* 2175799 bugfix: update boxes
+
 ## Release 1.2.0
 
 * 5dda33c bugfix: QA
