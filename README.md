@@ -159,7 +159,6 @@ line must be in `requirements.yml`.
 # Example Playbook
 
 ```yaml
----
 - hosts: localhost
   roles:
     - trombik.apt_repo
