@@ -1,3 +1,7 @@
+## Release 1.2.2
+
+* 02efcab bugfix: QA and update bump box versions
+
 ## Release 1.2.1
 
 * 15de982 bugfix: QA
