@@ -111,7 +111,7 @@ line must be in `requirements.yml`.
 | `__influxdb_conf_dir` | `/etc/influxdb` |
 | `__influxdb_conf_file_name` | `influxdb.conf` |
 | `__influxdb_service` | `influxdb` |
-| `__influxdb_management_packages` | `["python-influxdb", "python-requests"]` |
+| `__influxdb_management_packages` | `["python3-influxdb", "python3-requests"]` |
 
 ## FreeBSD
 
