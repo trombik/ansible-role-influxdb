@@ -1,3 +1,8 @@
+## Release 1.2.3
+
+* ef6e30c bugfix: update python on Ubuntu, support Ubuntu 20.04
+* 2293495 bugfix: add Publish on Ansible Galaxy
+
 ## Release 1.2.2
 
 * 02efcab bugfix: QA and update bump box versions
