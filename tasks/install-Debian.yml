@@ -30,3 +30,27 @@
   service:
     name: "{{ influxdb_service }}"
     enabled: yes
+
+- name: Patch /etc/init.d/influxdb
+  # XXX the provided script does not work. the daemon exits after ansible
+  # play. I'm sure that the upstream does not test it anymore as few
+  # distributions use sysvinit
+  patch:
+    backup: yes
+    dest: /etc/init.d/influxdb
+    src: patch-sysvinit.diff
+  when:
+    - ansible_service_mgr == 'sysvinit'
+  notify:
+    - Restart influxdb
+
+- name: Create /etc/default/influxdb
+  template:
+    src: sysvinit.default.j2
+    dest: /etc/default/influxdb
+    mode: 0644
+    validate: sh -n %s
+  when:
+    - ansible_service_mgr == 'sysvinit'
+  notify:
+    - Restart influxdb

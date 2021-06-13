@@ -71,7 +71,8 @@
             -----END CERTIFICATE-----
     apt_repo_keys_to_add:
       - https://repos.influxdata.com/influxdb.key
-    apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+
+    apt_repo_to_add: "deb https://repos.influxdata.com/debian {% if ansible_distribution == 'Devuan' %}{{ apt_repo_codename_devuan_to_debian[ansible_distribution_release] }}{% else %}{{ ansible_distribution_release }}{% endif %} stable"
     apt_repo_enable_apt_transport_https: yes
     influxdb_admin_username: admin
     influxdb_admin_password: PassWord
@@ -103,6 +104,8 @@
         user_password: none
       - user_name: bar
         state: absent
+    influxdb_sysvinit_default: |
+      STDOUT={{ influxdb_log_dir }}/influxd.log
     influxdb_config: |
       reporting-disabled = true
       # this one is bind address for backup process

@@ -18,6 +18,9 @@ galaxy_info:
     - name: Ubuntu
       versions:
         - bionic
+    - name: Devuan
+      versions:
+        - beowulf
   galaxy_tags:
     - influxdb
 dependencies: []

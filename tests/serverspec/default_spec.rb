@@ -130,6 +130,16 @@ when "freebsd"
     its(:content) { should match(/^influxd_group="#{group}"$/) }
     its(:content) { should match(/^influxd_flags=""$/) }
   end
+when "devuan"
+  describe file("/etc/default/influxdb") do
+    it { should exist }
+    it { should be_file }
+    it { should be_mode 644 }
+    it { should be_owned_by default_user }
+    it { should be_grouped_into default_group }
+    its(:content) { should match(/^# Managed by ansible$/) }
+    its(:content) { should match(/^STDOUT=/) }
+  end
 end
 
 describe service(service) do

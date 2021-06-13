@@ -19,3 +19,4 @@ influxdb_include_x509_certificate: no
 influxdb_tls: no
 influxdb_tls_validate_certs: yes
 influxdb_management_packages: "{{ __influxdb_management_packages }}"
+influxdb_sysvinit_default: ""
