@@ -2,14 +2,6 @@
 
 Install and configure `influxdb`. Supports SSL/TLS.
 
-## Notes
-
-This role includes `influxdb_user_with_grants` `ansible` module, which is a
-patched version of `influxdb_user`, found in `ansible` [PR 46216](https://github.com/ansible/ansible/pull/46216).
-This module has an additional keyword `grants`. Until the PR is merged to
-release version, and subsequently to available `ansible` packages, the module
-will be used.
-
 # Requirements
 
 None
@@ -38,6 +30,7 @@ None
 | `influxdb_tls` | If `true`, use TLS transport | `no` |
 | `influxdb_tls_validate_certs` | If `true`, validate server's certificate during TLS handshake | `yes` |
 | `influxdb_management_packages` | List of packages to install for database management by `ansible` | `{{ __influxdb_management_packages }}` |
+| `influxdb_sysvinit_default` | Content of `/etc/default/influxdb` (Devuan only) | `""` |
 
 ## `influxdb_databases`
 
@@ -60,8 +53,6 @@ This is a list of dict of users to create or remove. The keys of the dict are
 any keys supported by
 [`influxdb_user`](https://docs.ansible.com/ansible/latest/modules/influxdb_user_module.html)
 `ansible` module.
-
-Also, `influxdb_user_with_grants` supports `grants` keyword.
 
 ```yaml
 influxdb_users:
@@ -159,6 +150,7 @@ line must be in `requirements.yml`.
 # Example Playbook
 
 ```yaml
+---
 - hosts: localhost
   roles:
     - trombik.apt_repo
@@ -231,7 +223,8 @@ line must be in `requirements.yml`.
             -----END CERTIFICATE-----
     apt_repo_keys_to_add:
       - https://repos.influxdata.com/influxdb.key
-    apt_repo_to_add: "deb https://repos.influxdata.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
+
+    apt_repo_to_add: "deb https://repos.influxdata.com/debian {% if ansible_distribution == 'Devuan' %}{{ apt_repo_codename_devuan_to_debian[ansible_distribution_release] }}{% else %}{{ ansible_distribution_release }}{% endif %} stable"
     apt_repo_enable_apt_transport_https: yes
     influxdb_admin_username: admin
     influxdb_admin_password: PassWord
@@ -263,6 +256,8 @@ line must be in `requirements.yml`.
         user_password: none
       - user_name: bar
         state: absent
+    influxdb_sysvinit_default: |
+      STDOUT={{ influxdb_log_dir }}/influxd.log
     influxdb_config: |
       reporting-disabled = true
       # this one is bind address for backup process

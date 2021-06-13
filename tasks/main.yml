@@ -106,20 +106,14 @@
     ssl: "{{ item.ssl | default(influxdb_tls) }}"
     state: "{{ item.state }}"
     timeout: "{{ item.timeout | default(omit) }}"
-    # XXX in some older ansible versions, the influxdb module does not set
-    # default value for udp_port, which causes the following error.
-    #
-    # File "/usr/local/lib/python3.8/site-packages/influxdb/client.py", line 125, in __init__
-    #   self.__udp_port = int(udp_port)
-    # TypeError: int() argument must be a string, a bytes-like object or a number, not 'NoneType'
-    udp_port: "{{ item.udp_port | default(4444) }}"
+    udp_port: "{{ item.udp_port | default(omit) }}"
     use_udp: "{{ item.use_udp | default(omit) }}"
     login_username: "{{ item.username | default(influxdb_admin_username) }}"
     validate_certs: "{{ item.validate_certs | default(influxdb_tls_validate_certs) }}"
   with_items: "{{ influxdb_databases }}"
 
 - name: Create or delete users
-  influxdb_user_with_grants:
+  influxdb_user:
     admin: "{{ item.admin | default(omit) }}"
     state: "{{ item.state | default('present')}}"
     user_name: "{{ item.user_name }}"
@@ -132,8 +126,7 @@
     retries: "{{ item.retries | default(omit) }}"
     ssl: "{{ item.ssl | default(influxdb_tls) }}"
     timeout: "{{ item.timeout | default(omit) }}"
-    # XXX see influxdb_database task above
-    udp_port: "{{ item.udp_port | default(4444) }}"
+    udp_port: "{{ item.udp_port | default(omit) }}"
     use_udp: "{{ item.use_udp | default(omit) }}"
     validate_certs: "{{ item.validate_certs | default(influxdb_tls_validate_certs) }}"
     grants: "{{ item.grants | default(omit) }}"

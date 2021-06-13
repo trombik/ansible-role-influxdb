@@ -1,0 +1,58 @@
+--- influxdb.~1~	2021-06-13 16:38:47.961939597 +0000
++++ influxdb	2021-06-13 16:42:03.647733592 +0000
+@@ -30,6 +30,17 @@
+     exit 1
+ fi
+ 
++# Configuration file
++CONFIG=/etc/influxdb/influxdb.conf
++
++# PID file for the daemon
++PIDFILE=/var/run/influxdb/influxd.pid
++
++# Override init script variables with DEFAULT values
++if [ -r $DEFAULT ]; then
++    source $DEFAULT
++fi
++
+ # Daemon name, where is the actual executable If the daemon is not
+ # there, then exit.
+ DAEMON=/usr/bin/influxd
+@@ -38,11 +49,6 @@
+     exit 5
+ fi
+ 
+-# Configuration file
+-CONFIG=/etc/influxdb/influxdb.conf
+-
+-# PID file for the daemon
+-PIDFILE=/var/run/influxdb/influxd.pid
+ PIDDIR=`dirname $PIDFILE`
+ if [ ! -d "$PIDDIR" ]; then
+     mkdir -p $PIDDIR
+@@ -73,11 +79,6 @@
+     mkdir -p $(dirname $STDERR)
+ fi
+ 
+-# Override init script variables with DEFAULT values
+-if [ -r $DEFAULT ]; then
+-    source $DEFAULT
+-fi
+-
+ function log_failure_msg() {
+     echo "$@" "[ FAILED ]"
+ }
+@@ -126,10 +127,12 @@
+             --quiet \
+             --pidfile $PIDFILE \
+             --exec $DAEMON \
++            --background \
++            --no-close \
+             -- \
+             -pidfile $PIDFILE \
+             -config $CONFIG \
+-            $INFLUXD_OPTS >>$STDOUT 2>>$STDERR &
++            $INFLUXD_OPTS >>$STDOUT 2>>$STDERR
+     else
+         local CMD="$DAEMON -pidfile $PIDFILE -config $CONFIG $INFLUXD_OPTS >>$STDOUT 2>>$STDERR &"
+         su -s /bin/sh -c "$CMD" $USER
